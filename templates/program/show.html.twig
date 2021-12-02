@@ -24,9 +24,11 @@
 
 	</div>
 	<ul>
-	 {% for season in seasons %}
-	 <li><a href="{{ path('program_season_show', {programId: season.program.id, seasonId: season.id}) }}" >{{ season.description }}</a></li>
-	 {% endfor %}
+		{% for season in seasons %}
+			<li>
+				<a href="{{ path('program_season_show', {program: season.program.id, season: season.id}) }}">{{ season.description }}</a>
+			</li>
+		{% endfor %}
 	</ul>
 
 
