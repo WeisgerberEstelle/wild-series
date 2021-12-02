@@ -23,6 +23,11 @@
 		</div>
 
 	</div>
+	<ul>
+	 {% for season in seasons %}
+	 <li><a href="{{ path('program_season_show', {programId: season.program.id, seasonId: season.id}) }}" >{{ season.description }}</a></li>
+	 {% endfor %}
+	</ul>
 
 
 	<a href="{{ path('program_index') }}">

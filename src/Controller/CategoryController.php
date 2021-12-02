@@ -23,6 +23,7 @@ use App\Entity\Program;
 class CategoryController extends AbstractController
 
 {
+    private $programs;
     /**
 
      * @Route("/", name="index")
