@@ -1,6 +1,13 @@
 {% extends "base.html.twig" %}
 
 {% block body %}
-	<h1>Bienvenue !</h1>
-	<img src="{{ asset('build/path_to_image.png') }}" alt=""/>
-{% endblock %}
+	<img src="{{ asset('build/images/banner.jpg') }}">
+
+	<div class="row container-card">
+
+		{% include '_card.html.twig'%}
+
+		{% include '_card-actor.twig'%}
+
+
+	{% endblock %}

@@ -1,6 +1,71 @@
-$primary: #A24651;
-$secondary: #FFF0E3;
+@import url('https://fonts.googleapis.com/css2?family=Bigelow+Rules&family=Faster+One&family=Flamenco:wght@300;400&display=swap');
+$primary          : #A24651;
+$secondary        : #FFF0E3;
+$thirdColor       :#201e1d;
+$secondTitleColor :white;
+$navFont          : 'Bigelow Rules';
+$titleFont        :'Faster One';
+$textFont         : 'Flamenco';
+$logoSize         :50px;
+$titleSize        :45px;
+$navSize          :35px;
+$textSize         : 20px;
+
+
 @import "~bootstrap/scss/bootstrap";
+
 body {
     background-color: $primary;
+
+    .navLink,
+    .logo {
+        font-family: $navFont;
+        color      : $secondary;
+    }
+
+    h2 {
+        font-family: $titleFont;
+        color      : $secondTitleColor;
+    }
+
+    p,
+    a,
+    h3 {
+        font-family: $textFont;
+        color      : $thirdColor;
+    }
+
+    p {
+        font-size: $textFont;
+    }
+}
+
+.logo {
+    font-size: $logoSize;
+}
+
+.navLink {
+    font-size: $navSize;
+}
+
+.banner {
+    background-image: radial-gradient(gray 25%, $thirdColor 75%);
+    height    : 350px;
+
+}
+
+.mention {
+
+    background-color: $thirdColor;
+
+    a {
+        font-family    : $navFont;
+        text-decoration: none;
+        font-size      : $textSize;
+        color          : white;
+    }
+}
+
+.card {
+    background-color: $secondary;
 }
