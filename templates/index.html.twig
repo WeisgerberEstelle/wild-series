@@ -1,13 +1,12 @@
 {% extends "base.html.twig" %}
 
 {% block body %}
-	<img src="{{ asset('build/images/banner.jpg') }}">
 
-	<div class="row container-card">
+	<div class="row container-card my-5">
 
 		{% include '_card.html.twig'%}
 
 		{% include '_card-actor.twig'%}
 
-
-	{% endblock %}
+	</div>
+{% endblock %}
