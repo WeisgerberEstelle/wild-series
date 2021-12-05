@@ -83,6 +83,7 @@ class SeasonController extends AbstractController
      */
     public function delete(Request $request, Season $season, EntityManagerInterface $entityManager): Response
     {
+        
         if ($this->isCsrfTokenValid('delete'.$season->getId(), $request->request->get('_token'))) {
             $entityManager->remove($season);
             $entityManager->flush();

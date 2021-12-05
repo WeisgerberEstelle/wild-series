@@ -9,7 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
-
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 use App\Form\ProgramType;
@@ -88,12 +88,7 @@ class ProgramController extends AbstractController
     }
 
     /**
-
-     * Getting a program by id
-
-     *
-
-     * @Route("/{id<^[0-9]+$>}", name="show")
+     * @Route("/{id<^[0-9]+$>}", name="show", methods={"GET"})
 
      * @return Response
 
@@ -117,6 +112,40 @@ class ProgramController extends AbstractController
             'program' => $program, 'seasons' => $seasons
 
         ]);
+    }
+
+     /**
+     * @Route("/{id}/edit", name="program_edit", methods={"GET", "POST"})
+     */
+    public function edit(Request $request, Program $program, EntityManagerInterface $entityManager): Response
+    {
+        $form = $this->createForm(ProgramType::class, $program);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+
+            return $this->redirectToRoute('program_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->renderForm('program/edit.html.twig', [
+            'program' => $program,
+            'form' => $form,
+        ]);
+    }
+
+     /**
+     * @Route("/{id}", name="delete", methods={"POST"})
+     */
+    public function delete(Request $request, Program $program, EntityManagerInterface $entityManager): Response
+    {
+        
+        if ($this->isCsrfTokenValid('delete'.$program->getId(), $request->request->get('_token'))) {
+            $entityManager->remove($program);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('program_index', [], Response::HTTP_SEE_OTHER);
     }
 
     /**
