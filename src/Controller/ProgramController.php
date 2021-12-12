@@ -11,7 +11,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Annotation\Route;
-
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use App\Form\ProgramType;
 use App\Service\Slugify;
 use App\Entity\Program;
@@ -59,7 +60,7 @@ class ProgramController extends AbstractController
 
      */
 
-    public function new(Request $request, Slugify $slugify): Response
+    public function new(Request $request, Slugify $slugify, MailerInterface $mailer): Response
 
     {
         $program = new Program();
@@ -77,6 +78,20 @@ class ProgramController extends AbstractController
             $entityManager->persist($program);
 
             $entityManager->flush();
+
+            
+            $email = (new Email())
+
+                ->from($this->getParameter('mailer_from'))
+
+                ->to('akumaony@gmail.com')
+
+                ->subject('Une nouvelle série vient d\'être publiée !')
+
+                ->html($this->renderView('program/newProgramEmail.html.twig', ['program' => $program]));
+
+
+        $mailer->send($email);
 
             return $this->redirectToRoute('program_index');
         }
