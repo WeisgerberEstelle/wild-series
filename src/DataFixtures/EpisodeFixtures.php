@@ -51,6 +51,8 @@ class EpisodeFixtures extends Fixture implements DependentFixtureInterface
     public function __construct(Slugify $slugify)
     {
         $this->slugify = $slugify;
+
+      
     }
 
 

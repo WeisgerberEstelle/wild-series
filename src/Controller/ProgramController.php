@@ -18,6 +18,9 @@ use App\Service\Slugify;
 use App\Entity\Program;
 use App\Entity\Season;
 use App\Entity\Episode;
+use App\Entity\Comment;
+use App\Form\CommentType;
+use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
 
 /**
 
@@ -74,6 +77,7 @@ class ProgramController extends AbstractController
             $slug = $slugify->generate($program->getTitle());
 
             $program->setSlug($slug);
+            $program->setOwner($this->getUser());
 
             $entityManager->persist($program);
 
@@ -136,6 +140,13 @@ class ProgramController extends AbstractController
      */
     public function edit(Request $request, Program $program, Slugify $slugify, EntityManagerInterface $entityManager): Response
     {
+        if (!($this->getUser() == $program->getOwner())) {
+
+            // If not the owner, throws a 403 Access Denied exception
+
+            throw new AccessDeniedException('Only the owner can edit the program!');
+
+        }
         $form = $this->createForm(ProgramType::class, $program);
         $form->handleRequest($request);
 
@@ -184,9 +195,29 @@ class ProgramController extends AbstractController
     /**
      * @Route("/{program}/season/{season}/episode/{episode}", name="episode_show")
      */
-    public function showEpisode(Program $program, Season $season, Episode $episode): Response
+    public function showEpisode(Program $program, Season $season, Episode $episode, Request $request): Response
     {
+        $comment= new Comment();
 
-        return $this->render('program/episode_show.html.twig', ['program' => $program, 'season' => $season, 'episode' => $episode]);
+        $form = $this->createForm(CommentType::class, $comment);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            $entityManager = $this->getDoctrine()->getManager();
+
+            $comment->setAuthor($this->getUser());
+
+            $comment->setEpisode($episode);
+
+            $entityManager->persist($comment);
+    
+            $entityManager->flush();
+    
+            return $this->redirectToRoute('program_episode_show', ['program' => $program->getId(), 'season' => $season->getId(), 'episode' =>$episode->getId()]);
+        }
+
+
+        return $this->render('program/episode_show.html.twig', ['program' => $program, 'season' => $season, 'episode' => $episode, "form" => $form->createView(),]);
     }
 }
