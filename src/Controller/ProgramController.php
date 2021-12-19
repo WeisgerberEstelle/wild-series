@@ -20,6 +20,7 @@ use App\Entity\Season;
 use App\Entity\Episode;
 use App\Entity\Comment;
 use App\Form\CommentType;
+use App\Repository\CommentRepository;
 use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
 
 /**
@@ -136,7 +137,7 @@ class ProgramController extends AbstractController
     }
 
     /**
-     * @Route("/{slug}/edit", name="program_edit", methods={"GET", "POST"})
+     * @Route("/{slug}/edit", name="edit", methods={"GET", "POST"})
      */
     public function edit(Request $request, Program $program, Slugify $slugify, EntityManagerInterface $entityManager): Response
     {
@@ -195,8 +196,8 @@ class ProgramController extends AbstractController
     /**
      * @Route("/{program}/season/{season}/episode/{episode}", name="episode_show")
      */
-    public function showEpisode(Program $program, Season $season, Episode $episode, Request $request): Response
-    {
+    public function showEpisode(Program $program, Season $season, Episode $episode, Request $request, CommentRepository $commentRepository): Response
+    {   
         $comment= new Comment();
 
         $form = $this->createForm(CommentType::class, $comment);
@@ -218,6 +219,6 @@ class ProgramController extends AbstractController
         }
 
 
-        return $this->render('program/episode_show.html.twig', ['program' => $program, 'season' => $season, 'episode' => $episode, "form" => $form->createView(),]);
+        return $this->render('program/episode_show.html.twig', ['program' => $program, 'season' => $season, 'comments' =>$commentRepository->findall(), 'episode' => $episode, "form" => $form->createView(),]);
     }
 }

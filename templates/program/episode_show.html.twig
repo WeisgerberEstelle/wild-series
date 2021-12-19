@@ -27,6 +27,23 @@
 		</div>
 
 	</div>
+
+	<div class="comments">
+		{% for comment in comments %}
+			<div class="comment">
+				<h3>{{ comment.author.email }}</h3>
+				<p>
+					{{ comment.comment }}</p>
+				<div>
+					{{ comment.rate}}
+				</div>
+			{% if is_granted("ROLE_ADMIN") or app.user == comment.author %}
+				{{ include('comment/_delete_form.html.twig') }}
+			{% endif %}
+			</div>
+		{% endfor %}
+	</div>
+
 	{% if app.user %}
 		{{ form_start(form) }}
 
@@ -35,6 +52,7 @@
 		<button type="submit">Add comment</button>
 
 		{{ form_end(form) }}
+
 
 	{% endif %}
 
