@@ -24,4 +24,14 @@ class LoginController extends AbstractController
             'error'         => $error,
         ]);
     }
+
+    /**
+     * @Route("/my-profile", name="my-profile")
+     */
+
+     public function showProfil():Response
+     {
+         return $this->render('login/profil.html.twig');
+     }
+
 }

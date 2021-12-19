@@ -20,7 +20,7 @@
 
 			{% if app.user %}
 
-				{{ app.user.email }}
+				<a href="{{ path('my-profile') }}">Mon compte</a>
 
 				<a href="{{ path('app_logout') }}">
 					Se déconnecter</a>
@@ -29,6 +29,7 @@
 
 				<a href="{{ path('login') }}">
 					Se connecter</a>
+				<a href="{{ path('app_register') }}">S'inscrire</a>
 
 			{% endif %}
 		</div>
