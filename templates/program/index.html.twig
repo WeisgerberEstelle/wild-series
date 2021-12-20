@@ -1,35 +1,50 @@
 {% extends 'base.html.twig' %}
 
 
-{% block title %}All programs{% endblock %}
+{% block title %}All programs
+{% endblock %}
 
 
 {% block body %}
 
-    <h1>Toutes les séries de la table program : </h1>
+	<h1>Toutes les séries de la table program :
+	</h1>
+	<div class="search-form">
+		{{ form_start(form) }}
 
-    {% for program in programs %}
- <div>
+		{{ form_widget(form) }}
 
-            <h2>{{ loop.index }} / {{ program.title }} - Catégorie : {{ program.category.name }}</h2>
+		<button type="submit">Search</button>
 
-            <p>{{ program.summary }}</p>
+		{{ form_end(form) }}
+	</div>
 
-            <a href="{{ path("program_show", { slug: program.slug }) }}">Voir la fiche</a>
+	{% for program in programs %}
+		<div>
 
-        </div>
+			<h2>{{ loop.index }}
+				/
+				{{ program.title }}
+				- Catégorie :
+				{{ program.category.name }}</h2>
 
-    {% else %}
+			<p>{{ program.summary }}</p>
 
-        Aucune série trouvée.
+			<a href="{{ path("program_show", { slug: program.slug }) }}">Voir la fiche</a>
 
-    {% endfor %}
+		</div>
+
+	{% else %}
+
+		Aucune série trouvée.
+
+	{% endfor %}
 
 
-    <a href="{{ path('app_index') }}">
+	<a href="{{ path('app_index') }}">
 
-        Retour à l'accueil
+		Retour à l'accueil
 
-    </a>
+	</a>
 
 {% endblock %}

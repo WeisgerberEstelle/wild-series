@@ -21,8 +21,9 @@ use App\Entity\Episode;
 use App\Entity\Comment;
 use App\Form\CommentType;
 use App\Repository\CommentRepository;
+use App\Repository\ProgramRepository;
 use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
-
+use App\Form\SearchProgramType;
 /**
 
  * @Route("/program", name="program_")
@@ -43,17 +44,30 @@ class ProgramController extends AbstractController
      * @return Response A response instance
 
      */
-    public function index(): Response
+    public function index(request $request, ProgramRepository $programRepository): Response
 
     {
-        $programs = $this->getDoctrine()
-            ->getRepository(Program::class)
-            ->findAll();
+        $form=$this->createForm(SearchProgramType::class);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $title=$form->getData()['search'];
+
+            $programs=$programRepository->findLikeName($title);
+        
+        }else {
+            $programs = $programRepository->findAll();
+        }
+        
+
 
 
         return $this->render('program/index.html.twig', [
 
-            'programs' => $programs
+            'programs' => $programs,
+            'form' =>$form->createView()
 
         ]);
     }
