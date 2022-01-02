@@ -24,6 +24,7 @@ use App\Repository\CommentRepository;
 use App\Repository\ProgramRepository;
 use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
 use App\Form\SearchProgramType;
+
 /**
 
  * @Route("/program", name="program_")
@@ -47,27 +48,26 @@ class ProgramController extends AbstractController
     public function index(request $request, ProgramRepository $programRepository): Response
 
     {
-        $form=$this->createForm(SearchProgramType::class);
+        $form = $this->createForm(SearchProgramType::class);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $title=$form->getData()['search'];
+            $title = $form->getData()['search'];
 
-            $programs=$programRepository->findLikeName($title);
-        
-        }else {
+            $programs = $programRepository->findLikeName($title);
+        } else {
             $programs = $programRepository->findAll();
         }
-        
+
 
 
 
         return $this->render('program/index.html.twig', [
 
             'programs' => $programs,
-            'form' =>$form->createView()
+            'form' => $form->createView()
 
         ]);
     }
@@ -98,7 +98,7 @@ class ProgramController extends AbstractController
 
             $entityManager->flush();
 
-            
+
             $email = (new Email())
 
                 ->from($this->getParameter('mailer_from'))
@@ -110,9 +110,9 @@ class ProgramController extends AbstractController
                 ->html($this->renderView('program/newProgramEmail.html.twig', ['program' => $program]));
 
 
-        $mailer->send($email);
+            $mailer->send($email);
 
-        $this->addFlash('success', 'La nouvelle série a bien été créée');
+            $this->addFlash('success', 'La nouvelle série a bien été créée');
 
             return $this->redirectToRoute('program_index');
         }
@@ -162,7 +162,6 @@ class ProgramController extends AbstractController
             // If not the owner, throws a 403 Access Denied exception
 
             throw new AccessDeniedException('Only the owner can edit the program!');
-
         }
         $form = $this->createForm(ProgramType::class, $program);
         $form->handleRequest($request);
@@ -215,8 +214,8 @@ class ProgramController extends AbstractController
      * @Route("/{program}/season/{season}/episode/{episode}", name="episode_show")
      */
     public function showEpisode(Program $program, Season $season, Episode $episode, Request $request, CommentRepository $commentRepository): Response
-    {   
-        $comment= new Comment();
+    {
+        $comment = new Comment();
 
         $form = $this->createForm(CommentType::class, $comment);
 
@@ -230,13 +229,30 @@ class ProgramController extends AbstractController
             $comment->setEpisode($episode);
 
             $entityManager->persist($comment);
-    
+
             $entityManager->flush();
-    
-            return $this->redirectToRoute('program_episode_show', ['program' => $program->getId(), 'season' => $season->getId(), 'episode' =>$episode->getId()]);
+
+            return $this->redirectToRoute('program_episode_show', ['program' => $program->getId(), 'season' => $season->getId(), 'episode' => $episode->getId()]);
         }
 
 
-        return $this->render('program/episode_show.html.twig', ['program' => $program, 'season' => $season, 'comments' =>$commentRepository->findall(), 'episode' => $episode, "form" => $form->createView(),]);
+        return $this->render('program/episode_show.html.twig', ['program' => $program, 'season' => $season, 'comments' => $commentRepository->findall(), 'episode' => $episode, "form" => $form->createView(),]);
+    }
+
+    /**
+     * @Route("/{id}/watchlist", name="watchlist", methods={"POST", "GET"})
+     */
+
+    public function addToWatchlist(Program $program, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->getUser()->isInWatchlist($program)) {
+            $this->getUser()->removeFromWatchlist($program);
+        } else {
+
+            $this->getUser()->addToWatchlist($program);
+        }
+        $entityManager->flush();
+
+        return $this->redirectToRoute('program_show', ['slug' => $program->getSlug()]);
     }
 }
