@@ -112,6 +112,8 @@ class ProgramController extends AbstractController
 
         $mailer->send($email);
 
+        $this->addFlash('success', 'La nouvelle série a bien été créée');
+
             return $this->redirectToRoute('program_index');
         }
 
@@ -155,7 +157,7 @@ class ProgramController extends AbstractController
      */
     public function edit(Request $request, Program $program, Slugify $slugify, EntityManagerInterface $entityManager): Response
     {
-        if (!($this->getUser() == $program->getOwner())) {
+        if (!($this->getUser() == $program->getOwner() || $this->isGranted('ROLE_ADMIN'))) {
 
             // If not the owner, throws a 403 Access Denied exception
 
@@ -169,6 +171,7 @@ class ProgramController extends AbstractController
             $slug = $slugify->generate($program->getTitle());
             $program->setSlug($slug);
             $entityManager->flush();
+            $this->addFlash('success', 'La série a bien été modifié');
 
             return $this->redirectToRoute('program_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -189,6 +192,7 @@ class ProgramController extends AbstractController
             $entityManager->remove($program);
             $entityManager->flush();
         }
+        $this->addFlash('danger', 'La série a bien été supprimée');
 
         return $this->redirectToRoute('program_index', [], Response::HTTP_SEE_OTHER);
     }

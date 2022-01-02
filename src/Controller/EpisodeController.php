@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controller;
+
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use App\Entity\Episode;
@@ -12,6 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Service\Slugify;
+
 /**
  * @Route("/episode")
  */
@@ -30,7 +32,7 @@ class EpisodeController extends AbstractController
     /**
      * @Route("/new", name="episode_new", methods={"GET", "POST"})
      */
-    public function new(Request $request, EntityManagerInterface $entityManager, Slugify $slugify, MailerInterface $mailer ): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, Slugify $slugify, MailerInterface $mailer): Response
     {
         $episode = new Episode();
         $form = $this->createForm(EpisodeType::class, $episode);
@@ -53,17 +55,17 @@ class EpisodeController extends AbstractController
                 ->html($this->renderView('episode/newEpisodeEmail.html.twig', ['episode' => $episode]));
 
 
-        $mailer->send($email);
+            $mailer->send($email);
 
+            $this->addFlash('success', 'Le nouvel épisode a bien été créé');
 
             return $this->redirectToRoute('episode_index', [], Response::HTTP_SEE_OTHER);
         }
-        
+
         return $this->renderForm('episode/new.html.twig', [
             'episode' => $episode,
             'form' => $form,
         ]);
-
     }
     /**
      * @Route("/{slug}", name="episode_show", methods={"GET"})
@@ -88,6 +90,8 @@ class EpisodeController extends AbstractController
             $episode->setSlug($slug);
             $entityManager->flush();
 
+            $this->addFlash('success', 'L\'épisode a bien été modifié');
+
             return $this->redirectToRoute('episode_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -106,7 +110,7 @@ class EpisodeController extends AbstractController
             $entityManager->remove($episode);
             $entityManager->flush();
         }
-
+        $this->addFlash('danger', 'L\'épisode a bien été supprimé');
         return $this->redirectToRoute('episode_index', [], Response::HTTP_SEE_OTHER);
     }
 }
